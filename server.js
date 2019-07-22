@@ -23,7 +23,10 @@ app.get('/comments', (req, res) => {
   );
 });
 app.post('/comments', (req, res) => {
+  // TODO check if in cookies the user has a userId
+  // TODO if !userId => generate random userId
   // TODO dbInteractionss.postComments(id, comment, userId)
+  // TODO res.send 200
   res.send('not done');
 });
 
