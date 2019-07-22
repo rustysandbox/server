@@ -1,4 +1,9 @@
 let pg = require('pg');
+require('dotenv').config();
+const client = new pg.Client(process.env.DATABASE_URL);client.connect()
+client.on('error', error => {
+  console.error(error);
+})
 //TODO set up db
 //TODO get connection strings working
 //TODO set up schema
