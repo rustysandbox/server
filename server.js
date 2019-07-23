@@ -25,7 +25,15 @@ app.get('/news', (req, res) => {
         created: el.data.created,
         stars: 0
       }
-      formattedResponse.push(formattedElement)
+      //add news item to db 
+      let dbRes = dbInteractions.getNews(formattedElement);
+      if (dbRes) {
+        dbRes.title;
+        formattedResponse.push(dbRes)
+      } else {
+        formattedResponse.push(formattedElement)
+      }
+
     })
     res.send(formattedResponse)
   })
