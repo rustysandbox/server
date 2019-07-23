@@ -47,33 +47,7 @@ app.get('/news', (req, res) => {
 //comments
 
 app.get('/comments', (req, res) => {
-  const animeComments = req.query.data;
-  const url = `https://www.reddit.com/r/animenews.json`
 
-  client.query(`SELECT * FROM Article WHERE reddit.gen.id=$1`, [animeComments])
-    .then (sqlResult => {
-      if (sqlResult.rowCount === 0) {
-        superagent.get(url)
-          .then(result => {
-            let comment = new Comment (animeComments, result);
-            client.query(`INSERT INTO comments (
-              UserID,
-              user_comments,
-              article_id,
-              ) VALUES ($1, $2, $3)`, [comment.UserID, comment.user_comments, comment.article_id]
-            )
-            console.log('sending from googles');
-            res.send(comment);
-
-          })
-        res.send('Not Done');
-      } else {
-        console.log ('sending from db');
-        res.send(sqlResult.rows[0]);
-      }
-    });
-  res.send(dbInteractions.getComments()
-  );
 });
 
 app.post('/comments', (req, res) => {
