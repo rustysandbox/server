@@ -64,8 +64,9 @@ app.post('/comments', (req, res) => {
 //stars
 
 app.get('/stars', (req, res) => {
+
   if (!req.query.id) res.send(400)
-  dbInteractions.getStars(parseInt(req.query.id), res);
+  dbInteractions.getStars(req.query.id, res);
 });
 app.patch('/stars', (req, res) => {
   // TODO dbInteractionss.patchStar(id, newNumberOfStars)
