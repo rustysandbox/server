@@ -27,11 +27,24 @@ module.exports.dbInteraction = {
     //TODO post new comment w/ comment and user id  and forign key matching article
     return 'post comments';
   },
-  getStars: (id) => {
-    //TODO get stars 
-    return 'get stars';
+  getStars: (id, res) => {
+    let sql = `Select * FROM article WHERE id=$1`
+    client.query(sql, [id]).then(
+      (sqlRes) => {
+        if (sqlRes.rowCount > 0) {
+          console.log(sqlRes)
+          res.send(sqlRes[0].stars);
+        } else {
+          return res.send(404);
+        }
+      }
+    ).catch(error => {
+      console.error(error);
+      return res.send(500);
+    })
   },
   patchStars: (id, newNumberOfStars) => {
+
     //TODO update number of stars.
     return 'patch stars';
   }
