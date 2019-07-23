@@ -10,6 +10,40 @@ client.on('error', error => {
 
 
 module.exports.dbInteraction = {
+  getNews: (element) => {
+    let sql =
+      `SELECT * FROM article
+    WHERE reddit_gen_id=$1`
+    client.query(sql, [
+      element.id
+    ]
+    ).then(sqlResponse => {
+      if (sqlResponse.rowCount > 0) {
+        return sqlResponse.rows[0];
+      } else {
+        sql =
+          `INSERT INTO article(reddit_gen_id, url, title, source, thumbnailurl, created, stars) 
+          VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`;
+        client.query(sql, [
+          element.id,
+          element.url,
+          element.title,
+          element.source,
+          element.thumbnailurl,
+          element.created,
+          element.stars
+        ]).then(sqlResponse => {
+          return sqlResponse.rows[0];
+        }).catch(e => {
+          console.error('getNews', e)
+        })
+
+        return null;
+      }
+    }).catch(error => {
+      console.error('getNews', error);
+    })
+  },
   getComments: (id) => {
     let sql =
       `SELECT * FROM comments
@@ -32,7 +66,7 @@ module.exports.dbInteraction = {
     client.query(sql, [id]).then(
       (sqlRes) => {
         if (sqlRes.rowCount > 0) {
-          console.log(sqlRes)
+          // console.log(sqlRes)
           res.send(sqlRes[0].stars);
         } else {
           return res.send(404);

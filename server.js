@@ -25,7 +25,17 @@ app.get('/news', (req, res) => {
         created: el.data.created,
         stars: 0
       }
-      formattedResponse.push(formattedElement)
+      //add news item to db 
+      let dbRes = dbInteractions.getNews(formattedElement);
+      if (dbRes) {
+        console.log('db')
+        dbRes.title += ' from db';
+        formattedResponse.push(dbRes)
+      } else {
+        // console.log('reddit')
+        formattedResponse.push(formattedElement)
+      }
+
     })
     res.send(formattedResponse)
   })
