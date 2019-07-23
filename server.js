@@ -55,14 +55,9 @@ app.post('/comments', (req, res) => {
     userId = Math.floor((Math.random() + 1) * 10000);
   }
   dbInteractions.postComments(queryId, message, userId, res)
-  // TODO check if in cookies the user has a userId
-  // TODO if !userId => generate random userId
-  // TODO dbInteractionss.postComments(id, comment, userId)
-  // TODO res.send 200     res.cookie('user', userId)
 });
 
 //stars
-
 app.get('/stars', (req, res) => {
 
   if (!req.query.id) res.send(400)
