@@ -1,19 +1,35 @@
-let express = require('express');
-let app = express();
+const express = require('express');
+const app = express();
 require('dotenv').config();
-let dbInteractions = require('./sql.js').dbInteraction;
+const dbInteractions = require('./sql.js').dbInteraction;
+const superagent = require('superagent')
 
-let port = process.env.PORT || 3000;
-let enviroment = process.env.enviroment || 'dev';
+const port = process.env.PORT || 3000;
+const enviroment = process.env.enviroment || 'dev';
+
 
 app.get('/', (req, res) => {
-  res.send('alksdfljksdflkjfdslkjsdf not done')
+  res.send('not done')
 })
 app.get('/news', (req, res) => {
   //super agent reddit
-  res.send(
-    dbInteractions.getComments()
-  )
+  let formattedResponse = [];
+  superagent.get('https://www.reddit.com/r/animenews.json').then(result => {
+    result.body.data.children.forEach(el => {
+      let foo = {
+        id: el.data.id,
+        url: el.data.url,
+        title: el.data.title,
+        source: el.data.subreddit_name_prefixed,
+        thumbnailurl: el.data.thumbnail,
+        created: el.data.created,
+        stars: 0
+      }
+      formattedResponse.push(foo)
+    })
+    res.send(formattedResponse)
+  })
+
 })
 
 //comments
@@ -33,11 +49,8 @@ app.post('/comments', (req, res) => {
 //stars
 
 app.get('/stars', (req, res) => {
-  let foo = dbInteractions;
-  console.log(foo)
-  // TODO dbInteractionss.getStars(id)
-  res.send(dbInteractions.getStars())
-  // res.send(dbInteractionss.getComments());
+  if (!req.query.id) res.send(400)
+  dbInteractions.getStars(parseInt(req.query.id), res);
 });
 app.patch('/stars', (req, res) => {
   // TODO dbInteractionss.patchStar(id, newNumberOfStars)
