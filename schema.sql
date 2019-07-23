@@ -14,7 +14,7 @@ CREATE TABLE article (
 CREATE TABLE comments (
   id SERIAL PRIMARY KEY,
   UserID VARCHAR (255),
-  comment VARCHAR (255),
+  user_comments VARCHAR (255),
   article_id int,
   FOREIGN KEY (article_id) REFERENCES article (id)
 );

@@ -4,6 +4,10 @@ require('dotenv').config();
 const dbInteractions = require('./sql.js').dbInteraction;
 const superagent = require('superagent')
 
+const pg = require('pg');
+const client = new pg.Client(process.env.DATABASE_URL);
+client.connect();
+
 const port = process.env.PORT || 3000;
 const enviroment = process.env.enviroment || 'dev';
 
@@ -34,11 +38,37 @@ app.get('/news', (req, res) => {
 })
 
 //comments
+
 app.get('/comments', (req, res) => {
-  //TODO dbInteractionss.getComments(id)
+  const animeComments = req.query.data;
+  const url = `https://www.reddit.com/r/animenews.json`
+
+  client.query(`SELECT * FROM Article WHERE reddit.gen.id=$1`, [animeComments])
+    .then (sqlResult => {
+      if (sqlResult.rowCount === 0) {
+        superagent.get(url)
+          .then(result => {
+            let comment = new Comment (animeComments, result);
+            client.query(`INSERT INTO comments (
+              UserID,
+              user_comments,
+              article_id,
+              ) VALUES ($1, $2, $3)`, [comment.UserID, comment.user_comments, comment.article_id]
+            )
+            console.log('sending from googles');
+            res.send(comment);
+
+          })
+        res.send('Not Done');
+      } else {
+        console.log ('sending from db');
+        res.send(sqlResult.rows[0]);
+      }
+    });
   res.send(dbInteractions.getComments()
   );
 });
+
 app.post('/comments', (req, res) => {
   // TODO check if in cookies the user has a userId
   // TODO if !userId => generate random userId
