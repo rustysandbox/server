@@ -63,18 +63,19 @@ module.exports.dbInteraction = {
       }).catch(error => { console.error('sql.js postComments', error) });
   },
   getStars: (id, res) => {
-    let sql = `Select * FROM article WHERE id=$1`
+    let sql = `Select * FROM article WHERE reddit_gen_id=$1`
     client.query(sql, [id]).then(
-      (sqlRes) => {
+      sqlRes => {
         if (sqlRes.rowCount > 0) {
-          res.send(sqlRes[0].stars);
+          sqlRes
+          res.send(sqlRes.rows[0].stars.toString());
         } else {
           return res.send(404);
         }
       }
     ).catch(error => {
       console.error(error);
-      return res.send(500);
+      return res.sendStatus(500);
     })
   },
   patchStars: (id) => {
