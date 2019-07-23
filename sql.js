@@ -11,10 +11,19 @@ client.on('error', error => {
 
 module.exports.dbInteraction = {
   getComments: (id) => {
-    // TODO search db for comments w/ id as its forign key
-    return 'get comments';
+    let sql =
+      `SELECT * FROM comments
+    WHERE article_id=$1`
+    client.query(sql, [id], (err, res) => {
+      if (err) {
+        return null;
+      } else {
+        return res;
+      }
+    })
   },
   postComments: (id, comment, userId) => {
+
     //TODO post new comment w/ comment and user id  and forign key matching article
     return 'post comments';
   },

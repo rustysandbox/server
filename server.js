@@ -16,7 +16,7 @@ app.get('/news', (req, res) => {
   let formattedResponse = [];
   superagent.get('https://www.reddit.com/r/animenews.json').then(result => {
     result.body.data.children.forEach(el => {
-      let foo = {
+      let formattedElement = {
         id: el.data.id,
         url: el.data.url,
         title: el.data.title,
@@ -25,7 +25,7 @@ app.get('/news', (req, res) => {
         created: el.data.created,
         stars: 0
       }
-      formattedResponse.push(foo)
+      formattedResponse.push(formattedElement)
     })
     res.send(formattedResponse)
   })
