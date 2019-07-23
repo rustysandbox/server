@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS article;
 
 CREATE TABLE article (
   id SERIAL PRIMARY KEY,
+  reddit_gen_id VARCHAR(255),
   url VARCHAR(255),
   title VARCHAR(255),
   source VARCHAR(255),

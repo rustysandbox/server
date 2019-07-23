@@ -20,8 +20,7 @@ app.get('/news', (req, res) => {
   let formattedResponse = [];
   superagent.get('https://www.reddit.com/r/animenews.json').then(result => {
     result.body.data.children.forEach(el => {
-      console.log('element', el)
-      let foo = {
+      let formattedElement = {
         id: el.data.id,
         url: el.data.url,
         title: el.data.title,
@@ -30,7 +29,15 @@ app.get('/news', (req, res) => {
         created: el.data.created,
         stars: 0
       }
-      formattedResponse.push(foo)
+      //add news item to db 
+      let dbRes = dbInteractions.getNews(formattedElement);
+      if (dbRes) {
+        dbRes.title;
+        formattedResponse.push(dbRes)
+      } else {
+        formattedResponse.push(formattedElement)
+      }
+
     })
     res.send(formattedResponse)
   })
@@ -80,11 +87,8 @@ app.post('/comments', (req, res) => {
 //stars
 
 app.get('/stars', (req, res) => {
-  let foo = dbInteractions;
-  console.log(foo)
-  // TODO dbInteractionss.getStars(id)
-  res.send(dbInteractions.getStars())
-  // res.send(dbInteractionss.getComments());
+  if (!req.query.id) res.send(400)
+  dbInteractions.getStars(parseInt(req.query.id), res);
 });
 app.patch('/stars', (req, res) => {
   // TODO dbInteractionss.patchStar(id, newNumberOfStars)
