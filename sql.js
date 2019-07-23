@@ -4,9 +4,6 @@ const client = new pg.Client(process.env.DATABASE_URL); client.connect()
 client.on('error', error => {
   console.error(error);
 })
-//TODO set up db
-//TODO get connection strings working
-//TODO set up schema
 
 
 module.exports.dbInteraction = {
@@ -44,29 +41,32 @@ module.exports.dbInteraction = {
       console.error('getNews', error);
     })
   },
-  getComments: (id) => {
+  getComments: (id, res) => {
     let sql =
       `SELECT * FROM comments
-    WHERE article_id=$1`
-    client.query(sql, [id], (err, res) => {
-      if (err) {
-        return null;
-      } else {
-        return res;
-      }
-    })
+    WHERE reddit_gen_id=$1`
+    client.query(sql, [id])
+      .then(results => {
+        res.send(results.rows);
+      })
+      .catch(error => {
+        console.error('sql.js get comments', error)
+      })
   },
-  postComments: (id, comment, userId) => {
-
-    //TODO post new comment w/ comment and user id  and forign key matching article
-    return 'post comments';
+  postComments: (id, comment, userId, res) => {
+    let sql =
+      `INSERT INTO comments(user_id, comment, reddit_gen_id) 
+      VALUES ($1,$2,$3) RETURNING *`
+    client.query(sql, [userId, comment, id]).then(
+      sqlResponse => {
+        res.cookie('user', userId).send(sqlResponse.rows[0]);
+      }).catch(error => { console.error('sql.js postComments', error) });
   },
   getStars: (id, res) => {
     let sql = `Select * FROM article WHERE id=$1`
     client.query(sql, [id]).then(
       (sqlRes) => {
         if (sqlRes.rowCount > 0) {
-          // console.log(sqlRes)
           res.send(sqlRes[0].stars);
         } else {
           return res.send(404);
@@ -77,7 +77,7 @@ module.exports.dbInteraction = {
       return res.send(500);
     })
   },
-  patchStars: (id, newNumberOfStars) => {
+  patchStars: (id) => {
 
     //TODO update number of stars.
     return 'patch stars';

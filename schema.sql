@@ -14,9 +14,10 @@ CREATE TABLE article (
 
 CREATE TABLE comments (
   id SERIAL PRIMARY KEY,
-  UserID VARCHAR (255),
+  user_id VARCHAR (255),
   comment VARCHAR (255),
-  article_id int,
-  FOREIGN KEY (article_id) REFERENCES article (id)
+  reddit_gen_id VARCHAR(255)
+  -- article_id int,
+  -- FOREIGN KEY (article_id) REFERENCES article (id)
 );
 

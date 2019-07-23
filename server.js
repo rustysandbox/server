@@ -3,11 +3,10 @@ const app = express();
 require('dotenv').config();
 const dbInteractions = require('./sql.js').dbInteraction;
 const superagent = require('superagent')
-
 const port = process.env.PORT || 3000;
 const enviroment = process.env.enviroment || 'dev';
-
-
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 app.get('/', (req, res) => {
   res.send('not done')
 })
@@ -25,7 +24,7 @@ app.get('/news', (req, res) => {
         created: el.data.created,
         stars: 0
       }
-      //add news item to db 
+      //add news item to db
       let dbRes = dbInteractions.getNews(formattedElement);
       if (dbRes) {
         dbRes.title;
@@ -42,16 +41,24 @@ app.get('/news', (req, res) => {
 
 //comments
 app.get('/comments', (req, res) => {
-  //TODO dbInteractionss.getComments(id)
-  res.send(dbInteractions.getComments()
-  );
+  let queryId = req.query.id;
+  dbInteractions.getComments(queryId, res)
 });
 app.post('/comments', (req, res) => {
+  let queryId = req.query.id;
+  let message = req.query.message;
+  if (message.length < 1) {
+    res.send(400);
+  }
+  let userId = req.cookies.user;
+  if (!userId) {
+    userId = Math.floor((Math.random() + 1) * 10000);
+  }
+  dbInteractions.postComments(queryId, message, userId, res)
   // TODO check if in cookies the user has a userId
   // TODO if !userId => generate random userId
   // TODO dbInteractionss.postComments(id, comment, userId)
-  // TODO res.send 200
-  res.send('not done');
+  // TODO res.send 200     res.cookie('user', userId)
 });
 
 //stars
