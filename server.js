@@ -6,10 +6,11 @@ const superagent = require('superagent')
 const port = process.env.PORT || 3000;
 const enviroment = process.env.enviroment || 'dev';
 const cookieParser = require('cookie-parser');
-
+const cors = require('cors')
 const dbInteractions = require('./sql.js').dbInteraction;
 
 app.use(cookieParser());
+app.use(cors());
 app.get('/', (req, res) => {
   //TODO return site map w/ endpoints
   res.send('not done')
