@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS comments;
-DROP TABLE IF EXISTS article;
-
 CREATE TABLE article (
   id SERIAL PRIMARY KEY,
   reddit_gen_id VARCHAR(255),
