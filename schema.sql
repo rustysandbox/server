@@ -17,7 +17,5 @@ CREATE TABLE comments (
   user_id VARCHAR (255),
   comment VARCHAR (255),
   reddit_gen_id VARCHAR(255)
-  -- article_id int,
-  -- FOREIGN KEY (article_id) REFERENCES article (id)
 );
 
