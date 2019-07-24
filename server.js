@@ -12,38 +12,17 @@ app.get('/', (req, res) => {
 })
 app.get('/news', (req, res) => {
   //super agent reddit
-  let formattedResponse = [];
   superagent.get('https://www.reddit.com/r/animenews.json').then(result => {
-    result.body.data.children.forEach(el => {
-      let formattedElement = {
-        id: el.data.id,
-        url: el.data.url,
-        title: el.data.title,
-        source: el.data.subreddit_name_prefixed,
-        thumbnailurl: el.data.thumbnail,
-        created: el.data.created,
-        stars: 0
-      }
-      //add news item to db
-      let dbRes = dbInteractions.getNews(formattedElement);
-      if (dbRes) {
-        dbRes.title;
-        formattedResponse.push(dbRes)
-      } else {
-        formattedResponse.push(formattedElement)
-      }
-
-    })
-    res.send(formattedResponse)
-  })
+    dbInteractions.getNews(result, res);
+  }).catch(error => console.error('get news server.js', error))
 
 })
-
 //comments
 app.get('/comments', (req, res) => {
   let queryId = req.query.id;
   dbInteractions.getComments(queryId, res)
 });
+
 app.post('/comments', (req, res) => {
   let queryId = req.query.id;
   let message = req.query.message;
@@ -55,22 +34,16 @@ app.post('/comments', (req, res) => {
     userId = Math.floor((Math.random() + 1) * 10000);
   }
   dbInteractions.postComments(queryId, message, userId, res)
-  // TODO check if in cookies the user has a userId
-  // TODO if !userId => generate random userId
-  // TODO dbInteractionss.postComments(id, comment, userId)
-  // TODO res.send 200     res.cookie('user', userId)
 });
 
 //stars
-
 app.get('/stars', (req, res) => {
 
   if (!req.query.id) res.send(400)
   dbInteractions.getStars(req.query.id, res);
 });
 app.patch('/stars', (req, res) => {
-  // TODO dbInteractionss.patchStar(id, newNumberOfStars)
-  res.send('not done');
+  dbInteractions.patchStar(req.query.id, res)
 });
 
 app.use('*', (req, res) => {
